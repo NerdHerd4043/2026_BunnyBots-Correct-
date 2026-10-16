@@ -9,7 +9,6 @@ import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.subsystems.drivebase.DriveConstants;
-import frc.robot.subsystems.drivebase.DriveConstants.ModuleLocations;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide

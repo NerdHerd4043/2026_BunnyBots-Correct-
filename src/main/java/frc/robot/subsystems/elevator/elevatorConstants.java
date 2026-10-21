@@ -1,5 +1,8 @@
 package frc.robot.subsystems.elevator;
 
-public class elevatorConstants {
-    
+public final class elevatorConstants {
+    public static final class SparkMaxes {
+        public static final int elevRightID = 13;
+        public static final int elevLeftID = 14;
+    }
 }

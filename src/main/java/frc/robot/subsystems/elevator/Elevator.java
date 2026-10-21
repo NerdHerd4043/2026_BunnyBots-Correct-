@@ -12,11 +12,11 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Elevator extends SubsystemBase {
-    private SparkMax elevL = new SparkMax(ElevatorConstants.SparkMaxes.elevLeftID, MotorType.kBrushless);
-    private SparkMax elevR = new SparkMax(ElevatorConstants.SparkMaxes.elevRightID, MotorType.kBrushless);
+    private SparkMax elevL = new SparkMax(ElevatorConstants.elevLeftID, MotorType.kBrushless);
+    private SparkMax elevR = new SparkMax(ElevatorConstants.elevRightID, MotorType.kBrushless);
 
-    private ElevatorFeedforward elevFF = new ElevatorFeedforward(0, 0, 0);
-    private ProfiledPIDController PIDController = new ProfiledPIDController(0, 0, 0, null);
+    private ElevatorFeedforward elevFF = new ElevatorFeedforward(ElevatorConstants.kS, 0, 0);
+    private ProfiledPIDController PIDController = new ProfiledPIDController(ElevatorConstants.kP, 0, 0, null);
 
     private RelativeEncoder encoder = elevR.getEncoder();
 

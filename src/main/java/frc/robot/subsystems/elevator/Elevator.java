@@ -15,8 +15,10 @@ public class Elevator extends SubsystemBase {
     private SparkMax elevL = new SparkMax(ElevatorConstants.elevLeftID, MotorType.kBrushless);
     private SparkMax elevR = new SparkMax(ElevatorConstants.elevRightID, MotorType.kBrushless);
 
-    private ElevatorFeedforward elevFF = new ElevatorFeedforward(ElevatorConstants.kS, 0, 0);
-    private ProfiledPIDController PIDController = new ProfiledPIDController(ElevatorConstants.kP, 0, 0, null);
+    private ElevatorFeedforward elevFF = new ElevatorFeedforward(ElevatorConstants.kS, ElevatorConstants.kG,
+            ElevatorConstants.kV);
+    private ProfiledPIDController PIDController = new ProfiledPIDController(ElevatorConstants.kP, ElevatorConstants.kI,
+            ElevatorConstants.kD, null);
 
     private RelativeEncoder encoder = elevR.getEncoder();
 

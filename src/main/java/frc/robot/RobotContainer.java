@@ -65,7 +65,7 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    controller.a().whileTrue(new checkAprilTag(limeLight));
+    controller.a().whileTrue(limelight.getTv());
   }
 
   public Command getAutonomousCommand() {

@@ -65,7 +65,7 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    controller.a().whileTrue(limelight.getTv());
+    controller.a().whileTrue(limeLight.getTv());
   }
 
   public Command getAutonomousCommand() {

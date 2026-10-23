@@ -12,5 +12,6 @@ public class checkAprilTag extends Command{
     @Override
     public void execute() {
         System.out.println(this.limeLight.getTv());
+        System.out.println("checkAprilTag.execute()");
     }
 }

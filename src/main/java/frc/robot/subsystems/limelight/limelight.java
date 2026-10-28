@@ -5,13 +5,19 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class limelight extends SubsystemBase {
-    private limelight ll;
 
     public Command getTv() {
         return this.runOnce(() -> {
-            LimelightHelpers.getTV("limelight");
+            System.out.println(LimelightHelpers.getTV("limelight-left"));
             LimelightHelpers.getLimelightNTStringArray(getSubsystem(), getName());
+
+            if (LimelightHelpers.getRawFiducials("limelight-left").length != 0) {
+                System.out.println(LimelightHelpers.getRawFiducials("limelight-left")[0].id);
+            }
+
             System.out.println("It Works?");
         });
     }
+
+    // public getAprilTags
 }

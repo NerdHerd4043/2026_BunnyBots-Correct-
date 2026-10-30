@@ -1,12 +1,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.limelight.limelight;
+import frc.robot.subsystems.limelight.Limelight;
 
 public class CheckAprilTag extends Command {
-    private final limelight limeLight;
+    private final Limelight limeLight;
 
-    public CheckAprilTag(limelight limeLight) {
+    public CheckAprilTag(Limelight limeLight) {
         this.limeLight = limeLight;
         addRequirements(this.limeLight);
     }

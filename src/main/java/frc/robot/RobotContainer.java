@@ -13,7 +13,7 @@ import frc.robot.commands.Drive;
 import frc.robot.commands.CheckAprilTag;
 import frc.robot.subsystems.drivebase.DriveConstants;
 import frc.robot.subsystems.drivebase.Drivebase;
-import frc.robot.subsystems.limelight.limelight;
+import frc.robot.subsystems.limelight.Limelight;
 import cowlib.Util;
 
 public class RobotContainer {
@@ -21,7 +21,7 @@ public class RobotContainer {
       OperatorConstants.kDriverControllerPort);
 
   Drivebase drivebase = new Drivebase();
-  limelight limeLight = new limelight();
+  Limelight limeLight = new Limelight();
 
   public RobotContainer() {
     drivebase.setDefaultCommand(

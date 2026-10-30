@@ -3,10 +3,10 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.limelight.limelight;
 
-public class checkAprilTag extends Command {
+public class CheckAprilTag extends Command {
     private final limelight limeLight;
 
-    public checkAprilTag(limelight limeLight) {
+    public CheckAprilTag(limelight limeLight) {
         this.limeLight = limeLight;
         addRequirements(this.limeLight);
     }

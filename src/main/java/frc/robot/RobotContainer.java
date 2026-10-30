@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Drive;
-import frc.robot.commands.checkAprilTag;
+import frc.robot.commands.CheckAprilTag;
 import frc.robot.subsystems.drivebase.DriveConstants;
 import frc.robot.subsystems.drivebase.Drivebase;
 import frc.robot.subsystems.limelight.limelight;

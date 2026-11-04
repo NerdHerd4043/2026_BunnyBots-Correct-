@@ -1,5 +1,8 @@
 package frc.robot.subsystems.limelight;
 
-public class LimelightConstants {
+public final class LimelightConstants {
+    public static final double deadband = 7.5;
+
+    public static final double turningSpeed = 0.1;
 
 }

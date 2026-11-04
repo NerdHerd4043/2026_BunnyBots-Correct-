@@ -17,6 +17,11 @@ public class Drive extends Command {
   private final Supplier<double[]> speedXY;
   private final DoubleSupplier rot;
 
+  // false if the limelight is controling the turning of the robot
+  private static boolean turningEnabled = true;
+  // is the speed at which the robot turns when being controled by the limelight
+  private static double limelightTurningSpeed = 0.0;
+
   /** Creates a new Drive. */
   public Drive(Drivebase drivebase, Supplier<double[]> speedXY, DoubleSupplier rot) {
     this.drivebase = drivebase;
@@ -35,9 +40,27 @@ public class Drive extends Command {
   @Override
   public void execute() {
     var xy = this.speedXY.get();
-    var r = this.rot.getAsDouble();
+    var r = 0.0;
+
+    if (turningEnabled) {
+      r = this.rot.getAsDouble();
+    } else {
+      r = limelightTurningSpeed;
+    }
 
     this.drivebase.defaultDrive(xy[0], xy[1], r, true);
+  }
+
+  public static void disableNormalTurning() {
+    turningEnabled = false;
+  }
+
+  public static void enableNormalTurning() {
+    turningEnabled = true;
+  }
+
+  public static void setLimelightTurningSpeed(double turningSpeed) {
+    limelightTurningSpeed = turningSpeed;
   }
 
   // Called once the command ends or is interrupted.

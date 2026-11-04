@@ -4,13 +4,12 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Drive;
 import frc.robot.commands.CheckAprilTag;
+import frc.robot.commands.Drive;
 import frc.robot.subsystems.drivebase.DriveConstants;
 import frc.robot.subsystems.drivebase.Drivebase;
 import frc.robot.subsystems.limelight.Limelight;
@@ -21,7 +20,7 @@ public class RobotContainer {
       OperatorConstants.kDriverControllerPort);
 
   Drivebase drivebase = new Drivebase();
-  Limelight limeLight = new Limelight();
+  Limelight limelight = new Limelight();
 
   public RobotContainer() {
     drivebase.setDefaultCommand(
@@ -29,6 +28,8 @@ public class RobotContainer {
             drivebase,
             this::getScaledXY,
             () -> scaleRotationAxis(controller.getRightX())));
+
+    limelight.setDefaultCommand(new CheckAprilTag(limelight, controller.a()));
 
     configureBindings();
   }
@@ -65,7 +66,6 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    controller.a().whileTrue(limeLight.getTv());
   }
 
   public Command getAutonomousCommand() {

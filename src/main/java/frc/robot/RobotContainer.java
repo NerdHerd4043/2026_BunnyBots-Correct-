@@ -29,7 +29,7 @@ public class RobotContainer {
             this::getScaledXY,
             () -> scaleRotationAxis(controller.getRightX())));
 
-    limelight.setDefaultCommand(new CheckAprilTag(limelight, controller.a()));
+    limelight.setDefaultCommand(new CheckAprilTag(limelight, controller.a(), this));
 
     configureBindings();
   }
@@ -63,6 +63,10 @@ public class RobotContainer {
 
   private double squared(double input) {
     return Math.copySign(input * input, input);
+  }
+
+  public double getFieldAngle() {
+    return drivebase.getFieldAngle();
   }
 
   private void configureBindings() {

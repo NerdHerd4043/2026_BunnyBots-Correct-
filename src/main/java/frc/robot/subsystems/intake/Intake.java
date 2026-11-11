@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-    private SparkMax intakeLeft = new SparkMax(0, MotorType.kBrushless);
-    private SparkMax intakeRight = new SparkMax(0, MotorType.kBrushless);
+    private SparkMax intakeLeft = new SparkMax(15, MotorType.kBrushless);
+    private SparkMax intakeRight = new SparkMax(16, MotorType.kBrushless);
 
     public Intake() {
         final SparkMaxConfig intakeLeftConfig = new SparkMaxConfig();

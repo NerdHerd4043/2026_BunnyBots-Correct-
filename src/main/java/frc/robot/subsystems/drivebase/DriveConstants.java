@@ -29,10 +29,10 @@ public class DriveConstants {
   }
 
   public static final class SwerveModules {
-    public static final SwerveModuleConfig frontRight = new SwerveModuleConfig(1, 11, 21, false);
-    public static final SwerveModuleConfig frontLeft = new SwerveModuleConfig(2, 12, 22, false);
-    public static final SwerveModuleConfig backLeft = new SwerveModuleConfig(3, 13, 23, true);
-    public static final SwerveModuleConfig backRight = new SwerveModuleConfig(4, 14, 24, true);
+    public static final SwerveModuleConfig frontRight = new SwerveModuleConfig(1, 5, 9, false);
+    public static final SwerveModuleConfig backRight = new SwerveModuleConfig(2, 6, 10, true);
+    public static final SwerveModuleConfig backLeft = new SwerveModuleConfig(3, 7, 11, true);
+    public static final SwerveModuleConfig frontLeft = new SwerveModuleConfig(4, 8, 12, false);
   }
 
   public static final class ModuleLocations {

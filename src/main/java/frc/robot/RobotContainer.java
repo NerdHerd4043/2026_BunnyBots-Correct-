@@ -29,7 +29,7 @@ public class RobotContainer {
             this::getScaledXY,
             () -> scaleRotationAxis(controller.getRightX())));
 
-    limelight.setDefaultCommand(new CheckAprilTag(limelight, controller.a(), this));
+    limelight.setDefaultCommand(new CheckAprilTag(limelight, controller.a(), this, drivebase));
 
     configureBindings();
   }

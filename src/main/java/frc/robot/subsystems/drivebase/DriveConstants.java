@@ -13,9 +13,12 @@ public class DriveConstants {
   public static final Rotation2d backRightZeroRotation = new Rotation2d(0.0);
 
   public static final double deadband = 0.08;
+  public static final double autoCancelThreshold = 0.35;
+
   public static final int currentLimit = 40;
   public static final double slewRate = 20; // lower number for higher center of mass
   public static final int temp = 21;
+
   public static final double DRIVE_REDUCTION = 1.0 / 6.75;
   public static final double NEO_FREE_SPEED = 5820.0 / 60.0;
   public static final double WHEEL_DIAMETER = 0.1016;

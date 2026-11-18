@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.CheckAprilTag;
 import frc.robot.commands.Drive;
@@ -28,8 +29,6 @@ public class RobotContainer {
             drivebase,
             this::getScaledXY,
             () -> scaleRotationAxis(controller.getRightX())));
-
-    limelight.setDefaultCommand(new CheckAprilTag(limelight, controller.a(), this, drivebase));
 
     configureBindings();
   }
@@ -70,6 +69,18 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+
+    Trigger cancelAutoAprilTag = new Trigger(() -> anyJoystickInput());
+
+    Command aprilTagCommand = Commands.sequence(new CheckAprilTag(limelight, drivebase).until(cancelAutoAprilTag));
+
+    controller.a().toggleOnTrue(aprilTagCommand);
+  }
+
+  private boolean anyJoystickInput() {
+    return deadband(controller.getLeftY(), DriveConstants.autoCancelThreshold) != 0
+        || deadband(controller.getLeftX(), DriveConstants.autoCancelThreshold) != 0
+        || deadband(controller.getRightX(), DriveConstants.autoCancelThreshold) != 0;
   }
 
   public Command getAutonomousCommand() {

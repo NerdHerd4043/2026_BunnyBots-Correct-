@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.LimelightHelpers;
@@ -11,11 +12,30 @@ public class CheckAprilTag extends Command {
     final Limelight limeLight;
     private Drivebase drivebase;
 
+    /*
+     * This is the PID loop array
+     * 
+     * Index 0 is for rotation control
+     * Index 1 is for left and right movment (X) control
+     * Index 2 is for forward movment (Y) control
+     */
+    private PIDController[] PIDArray = {
+            new PIDController(LimelightConstants.RotkP, LimelightConstants.RotkI, LimelightConstants.RotkD),
+            new PIDController(LimelightConstants.XkP, LimelightConstants.XkI, LimelightConstants.XkD),
+            new PIDController(LimelightConstants.YkP, LimelightConstants.YkI, LimelightConstants.YkD)
+    };
+
     public CheckAprilTag(Limelight limeLight, Drivebase drivebase) {
         this.limeLight = limeLight;
         this.drivebase = drivebase;
 
         addRequirements(this.limeLight);
+
+        for (int i = 0; i < 3; i++) {
+            PIDArray[i].disableContinuousInput();
+            PIDArray[i].setSetpoint(0.0);
+        }
+
     }
 
     @Override
@@ -58,11 +78,11 @@ public class CheckAprilTag extends Command {
     }
 
     private double getXSpeed(Pose3d pos) {
-        if (pos.getRotation().getY() > 0 + LimelightConstants.yMovingDeadband) {
+        if (pos.getRotation().getY() > 0 + LimelightConstants.xMovingDeadband) {
             // Move the robot left
             return -LimelightConstants.movingSpeed;
 
-        } else if (pos.getRotation().getY() < 0 - LimelightConstants.yMovingDeadband) {
+        } else if (pos.getRotation().getY() < 0 - LimelightConstants.xMovingDeadband) {
             // Move the robot right
             return LimelightConstants.movingSpeed;
 
@@ -73,7 +93,7 @@ public class CheckAprilTag extends Command {
     }
 
     private double getYSpeed(Pose3d pos) {
-        if (pos.getX() > 0 + LimelightConstants.xMovingDeadband) {
+        if (pos.getX() > 0 + LimelightConstants.yMovingDeadband) {
             // Move the robot forword
             return LimelightConstants.movingSpeed;
 

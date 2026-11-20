@@ -48,6 +48,7 @@ public class CheckAprilTag extends Command {
 
         } else {
             drivebase.robotOrientedDrive(0.0, 0.0, 0.0);
+
         }
     }
 
@@ -62,14 +63,22 @@ public class CheckAprilTag extends Command {
     }
 
     private double getTurningSpeed() {
+        double limeLightTX = LimelightHelpers.getTX("limelight-left");
+
         // angles are good yes :D
-        if (LimelightHelpers.getTX("limelight-left") >= 0 + LimelightConstants.turningDeadband) {
+        if (limeLightTX >= 0 + LimelightConstants.turningDeadband) {
             // Rotate robot right
             return LimelightConstants.turningSpeed;
 
-        } else if (LimelightHelpers.getTX("limelight-left") <= 0 - LimelightConstants.turningDeadband) {
+            // For if I have time to get PID stuff working
+            // return PIDArray[0].calculate(limeLightTX);
+
+        } else if (limeLightTX <= 0 - LimelightConstants.turningDeadband) {
             // Rotate robot left
             return -LimelightConstants.turningSpeed;
+
+            // For if I have time to get PID stuff working
+            // return PIDArray[0].calculate(limeLightTX);
 
         }
         // Stop turning
@@ -78,13 +87,21 @@ public class CheckAprilTag extends Command {
     }
 
     private double getXSpeed(Pose3d pos) {
-        if (pos.getRotation().getY() > 0 + LimelightConstants.xMovingDeadband) {
+        double disRobotToAprilTagX = pos.getRotation().getY();
+
+        if (disRobotToAprilTagX > 0 + LimelightConstants.xMovingDeadband) {
             // Move the robot left
             return -LimelightConstants.movingSpeed;
 
-        } else if (pos.getRotation().getY() < 0 - LimelightConstants.xMovingDeadband) {
+            // For if I have time to get PID stuff working
+            // return PIDArray[1].calculate(disRobotToAprilTagX);
+
+        } else if (disRobotToAprilTagX < 0 - LimelightConstants.xMovingDeadband) {
             // Move the robot right
             return LimelightConstants.movingSpeed;
+
+            // For if I have time to get PID stuff working
+            // return PIDArray[1].calculate(disRobotToAprilTagX);
 
         }
 
@@ -93,9 +110,14 @@ public class CheckAprilTag extends Command {
     }
 
     private double getYSpeed(Pose3d pos) {
-        if (pos.getX() > 0 + LimelightConstants.yMovingDeadband) {
+        double disRobotToAprilTagY = pos.getX();
+
+        if (disRobotToAprilTagY > 0 + LimelightConstants.yMovingDeadband) {
             // Move the robot forword
             return LimelightConstants.movingSpeed;
+
+            // For if I have time to get PID stuff working
+            // return PIDArray[2].calculate(disRobotToAprilTagY);
 
         }
 

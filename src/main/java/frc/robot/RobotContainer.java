@@ -13,6 +13,7 @@ import frc.robot.commands.CheckAprilTag;
 import frc.robot.commands.Drive;
 import frc.robot.subsystems.drivebase.DriveConstants;
 import frc.robot.subsystems.drivebase.Drivebase;
+import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.limelight.Limelight;
 import cowlib.Util;
 
@@ -22,6 +23,7 @@ public class RobotContainer {
 
   Drivebase drivebase = new Drivebase();
   Limelight limelight = new Limelight();
+  Elevator elevator = new Elevator();
 
   public RobotContainer() {
     drivebase.setDefaultCommand(
@@ -75,6 +77,10 @@ public class RobotContainer {
     Command aprilTagCommand = Commands.sequence(new CheckAprilTag(limelight, drivebase).until(cancelAutoAprilTag));
 
     controller.a().toggleOnTrue(aprilTagCommand);
+
+    controller.povUp().whileTrue(elevator.goUpCommand());
+    controller.povDown().whileTrue(elevator.goDownCommand());
+
   }
 
   private boolean anyJoystickInput() {

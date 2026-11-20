@@ -1,211 +1,78 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems.elevator;
 
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkLimitSwitch;
-import com.revrobotics.spark.config.LimitSwitchConfig;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLimitSwitch;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.NotLogged;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 @Logged
 public class Elevator extends SubsystemBase {
-    private final SparkMax leftMotor = new SparkMax(ElevatorConstants.elevLeftID, MotorType.kBrushless);
-    private final SparkMax rightMotor = new SparkMax(ElevatorConstants.elevRightID, MotorType.kBrushless);
+    private SparkMax leftMotor = new SparkMax(ElevatorConstants.leftElevatorMotorID, MotorType.kBrushless);
+    private SparkMax rightMotor = new SparkMax(ElevatorConstants.rightElevatorMotorID, MotorType.kBrushless);
 
-    private boolean positionKnown = false;
-
-    private boolean enabled = false;
-    private boolean extended = false;
-
-    private RelativeEncoder encoder = rightMotor.getEncoder();
     private SparkLimitSwitch limitSwitch;
 
-    private ElevatorFeedforward feedforward = new ElevatorFeedforward(
-            ElevatorConstants.kS,
-            ElevatorConstants.kG,
-            ElevatorConstants.kV);
-
-    private ProfiledPIDController pidController = new ProfiledPIDController(
-            ElevatorConstants.kP,
-            ElevatorConstants.kI,
-            ElevatorConstants.kD,
-            // The motion profile constraints
-            ElevatorConstants.constraints);
-
-    @NotLogged
-    final SparkMaxConfig leftMotorConfigBrake;
-    @NotLogged
-    final SparkMaxConfig rightMotorConfigBrake;
-
-    @NotLogged
-    final SparkMaxConfig leftMotorConfigCoast;
-    @NotLogged
-    final SparkMaxConfig rightMotorConfigCoast;
-
-    /** Creates a new Elevator. */
     public Elevator() {
-        final SparkMaxConfig baseMotorConfig = new SparkMaxConfig();
+        final SparkMaxConfig leftMotorConfig = new SparkMaxConfig();
+        final SparkMaxConfig rightMotorConfig = new SparkMaxConfig();
 
-        baseMotorConfig.smartCurrentLimit(ElevatorConstants.currentLimit);
-        baseMotorConfig.idleMode(IdleMode.kBrake);
+        leftMotorConfig.follow(rightMotor, true);
 
-        leftMotorConfigBrake = new SparkMaxConfig().apply(baseMotorConfig);
-        rightMotorConfigBrake = new SparkMaxConfig().apply(baseMotorConfig);
+        leftMotorConfig.smartCurrentLimit(ElevatorConstants.currentLimit);
+        rightMotorConfig.smartCurrentLimit(ElevatorConstants.currentLimit);
 
-        leftMotorConfigBrake.follow(ElevatorConstants.elevRightID, true);
-        rightMotorConfigBrake.inverted(true);
+        rightMotorConfig.limitSwitch.reverseLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen);
 
-        rightMotorConfigBrake.limitSwitch.reverseLimitSwitchType(LimitSwitchConfig.Type.kNormallyOpen);
+        leftMotor.configure(leftMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        rightMotor.configure(rightMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        rightMotorConfigCoast = new SparkMaxConfig().apply(rightMotorConfigBrake);
-        leftMotorConfigCoast = new SparkMaxConfig().apply(leftMotorConfigBrake);
+        limitSwitch = rightMotor.getReverseLimitSwitch();
 
-        rightMotorConfigCoast.idleMode(IdleMode.kCoast);
-        leftMotorConfigCoast.idleMode(IdleMode.kCoast);
+    }
 
-        this.leftMotor.configure(leftMotorConfigBrake, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        this.rightMotor.configure(rightMotorConfigBrake, ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+    private void stop() {
+        rightMotor.stopMotor();
+    }
 
-        this.limitSwitch = this.rightMotor.getReverseLimitSwitch();
-
-        if (this.limitSwitch.isPressed()) {
-            this.resetPosition();
+    private void goUp() {
+        if (false) {
+            rightMotor.set(ElevatorConstants.speed);
+        } else {
+            stop();
         }
     }
 
-    public Command holdCommand() {
-        return this.runOnce(() -> this.pidController.setGoal(this.encoderPosition()));
-    }
-
-    public Command coastModeCommand() {
-        return this.startEnd(() -> {
-            this.leftMotor.configure(leftMotorConfigCoast, ResetMode.kNoResetSafeParameters,
-                    PersistMode.kNoPersistParameters);
-            this.rightMotor.configure(rightMotorConfigCoast, ResetMode.kNoResetSafeParameters,
-                    PersistMode.kNoPersistParameters);
-        }, () -> {
-            this.leftMotor.configure(leftMotorConfigBrake, ResetMode.kNoResetSafeParameters,
-                    PersistMode.kPersistParameters);
-            this.rightMotor.configure(rightMotorConfigBrake, ResetMode.kNoResetSafeParameters,
-                    PersistMode.kPersistParameters);
-        }).ignoringDisable(true);
-    }
-
-    private void updatePID() {
-        var setpoint = this.getSetpoint();
-        @SuppressWarnings("removal")
-        var ff = this.feedforward.calculate(setpoint.position, setpoint.velocity);
-        var output = ff + this.pidController.calculate(this.encoderPosition());
-        SmartDashboard.putNumber("Elevator Output", output);
-        this.rightMotor.setVoltage(output);
-    }
-
-    private void stopMotor() {
-        this.rightMotor.stopMotor();
-    }
-
-    @NotLogged
-    public TrapezoidProfile.State getSetpoint() {
-        return this.pidController.getSetpoint();
-    }
-
-    public double encoderPosition() {
-        return this.encoder.getPosition();
-    }
-
-    public void resetPosition() {
-        if (!this.positionKnown || this.encoderPosition() < 4) {
-            this.positionKnown = true;
-            this.encoder.setPosition(0);
+    private void goDown() {
+        if (!limitSwitch.isPressed()) {
+            rightMotor.set(-ElevatorConstants.speed);
+        } else {
+            stop();
         }
     }
 
-    public void enable() {
-        this.enabled = true;
+    public Command goUpCommand() {
+        return this.runOnce(() -> {
+            goUp();
+        }).finallyDo(() -> {
+            stop();
+        });
+
     }
 
-    public void disable() {
-        this.enabled = false;
+    public Command goDownCommand() {
+        return this.runOnce(() -> {
+            goDown();
+        }).finallyDo(() -> {
+            stop();
+        });
+
     }
 
-    public void extend(int level) {
-        this.enable();
-        this.extended = true;
-        this.setGoal(ElevatorConstants.elevatorHeights[level]);
-    }
-
-    public void collapse() {
-        this.extended = false;
-        this.setGoal(ElevatorConstants.elevatorHeights[0]);
-    }
-
-    // For testing purposes, not used in final robot
-    public void currentPose() {
-        this.setGoal(this.encoderPosition());
-    }
-
-    public Command extendCommand(int level) {
-        return this.runOnce(() -> this.extend(level));
-    }
-
-    public Command collapseCommand() {
-        return this.runOnce(this::collapse);
-    }
-
-    // For testing purposes, not used in final robot
-    public Command currentPoseCommand() {
-        return this.runOnce(this::currentPose);
-    }
-
-    public boolean elevatorExtended() {
-        return this.enabled;
-    }
-
-    private void setGoal(double input) {
-        this.pidController.setGoal(
-                MathUtil.clamp(input, 0, ElevatorConstants.maxElevatorHeight));
-    }
-
-    public boolean limitSwitchPressed() {
-        return this.limitSwitch.isPressed();
-    }
-
-    @Override
-    public void periodic() {
-        if (!this.extended && this.limitSwitchPressed()) {
-            this.stopMotor();
-            this.disable();
-            this.resetPosition();
-        }
-        if (this.enabled /* && this.positionKnown */) {
-            this.updatePID();
-        }
-
-        SmartDashboard.putNumber("Elevator Setpoint", this.pidController.getSetpoint().position);
-        SmartDashboard.putNumber("Elevator Applied Output", this.rightMotor.getAppliedOutput());
-
-        // SmartDashboard.putBoolean("Elevator Limit Switch",
-        // this.limitSwitchPressed());
-
-        // SmartDashboard.putBoolean("Elevator Enabled", this.enabled);
-        // SmartDashboard.putBoolean("Elevator Extended", this.extended);
-    }
 }

@@ -10,32 +10,27 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-    private SparkMax intakeLeft = new SparkMax(15, MotorType.kBrushless);
-    private SparkMax intakeRight = new SparkMax(16, MotorType.kBrushless);
+    private SparkMax intakeMotor = new SparkMax(IntakeConstants.intakeMotorID, MotorType.kBrushless);
 
     public Intake() {
-        final SparkMaxConfig intakeLeftConfig = new SparkMaxConfig();
-        final SparkMaxConfig intakeRightConfig = new SparkMaxConfig();
+        final SparkMaxConfig intakeConfig = new SparkMaxConfig();
 
-        intakeLeftConfig.follow(intakeRight);
-        intakeLeftConfig.inverted(false);
-        intakeRightConfig.inverted(true);
+        intakeConfig.inverted(true);
 
-        intakeLeft.configure(intakeLeftConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        intakeRight.configure(intakeRightConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    public void startIntake() {
-        intakeRight.set(.2);
+    public void runIntake() {
+        intakeMotor.set(IntakeConstants.intakeMotorSpeed);
     }
 
     public void stopIntake() {
-        intakeRight.stopMotor();
+        intakeMotor.stopMotor();
     }
 
-    public Command runIntake() {
+    public Command runIntakeCommand() {
         return this.runOnce(() -> {
-            startIntake();
+            runIntake();
         }).finallyDo(() -> {
             stopIntake();
         });
